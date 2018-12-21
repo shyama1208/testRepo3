@@ -1,19 +1,54 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-trigger:
-- master
-
-pool:
-  vmImage: 'Ubuntu-16.04'
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+- stage: dev
+  jobs:
+  - job: MyJob
+    displayName: Dev Job
+    continueOnError: true
+    steps:
+    - script: echo My dev job
+- stage: QA1
+  dependsOn: dev
+  jobs:
+  - job: QAJob
+    displayName: QA1
+    continueOnError: true
+    steps:
+    - script: echo My QA1 job
+- stage: QA2
+  dependsOn: dev
+  jobs:
+  - job: MyJob
+    displayName: QA2
+    continueOnError: true
+    steps:
+    - script: echo My QA2 job
+- stage: Prod
+  dependsOn:
+  - QA1
+  - QA2
+  jobs:
+  - job: ProdJob1
+    displayName: Prod Job1
+    continueOnError: true
+    steps:
+    - script: echo My prodjob1 job
+  - job: ProdJob2
+    dependsOn: ProdJob1
+    displayName: Prod Job2
+    continueOnError: true
+    steps:
+    - script: echo My first job
+  - job: ProdJob3
+    displayName: Prod Job3
+    dependsOn: ProdJob1
+    continueOnError: true
+    steps:
+    - script: echo My first job
+  - job: ProdJob4
+    displayName: Prod Job4
+    dependsOn: 
+    - ProdJob2
+    - ProdJob3
+    continueOnError: true
+    steps:
+    - script: echo My first job
