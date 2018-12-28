@@ -1,0 +1,138 @@
+stages:
+- stage: stage1
+  jobs:
+  - job: Job1
+    timeoutInMinutes: 2
+    cancelTimeoutInMinutes: 2
+
+    pool:
+      name: 'Default'
+
+    steps:
+      - task: PublishBuildArtifacts@1
+        displayName: Publish TestFolder
+        inputs:
+          pathToPublish: testFolder
+          artifactName: Artifact1
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish yml
+        inputs: 
+          pathToPublish: azure-pipelines.yml
+          artifactName: Artifact2
+  
+  
+  - job: Download_all_by_default
+    displayName: Download all artifacts by default
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - script: echo Will download all artifacts uploaded in Job1
+  
+  
+  - job: Download_only_specific_artifact
+    displayName: Download only specific artifact
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - download: current
+        artifact: Artifact1
+        
+  - job: Download_none
+    displayName: Don't download any artifact using none
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - download: none
+
+#----- patterns begin --------------------#
+  - job: Download_pattern_literal
+    displayName: Download pattern literal 
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - download: current
+        artifact: Artifact1
+        patterns: '**/*.txt'
+
+  - job: Download_pattern_sequence
+    displayName: Download pattern sequence
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - download: current
+        artifact: Artifact1
+        patterns: ['**/*.cmd', '**/*.ps1']
+
+#----- patterns end --------------------#
+
+  - job: Download_to_custom_location
+    displayName: Download to custom location
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - download: current
+        artifact: Artifact1
+        root: "$(pipeline.resourcesdirectory)/hello/test"
+        
+  - job: Download_apply_common_setting
+    displayName: Download apply commen setting for all artifact
+    dependsOn: Job1
+    pool:
+      name: 'Default'
+    steps:
+      - download: current
+        patterns: ['**/*.cmd', '**/*.ps1']
+
+#----- download optimization begin --------------------#
+  - job: Download_Optimization_for_selfinjected_task
+    displayName: Don't download automatically if no dependency
+    pool:
+      name: 'Default'
+    steps:
+      - download: none
+
+  #- job: No_Download_Optimization_for_user_task
+  #  displayName: Download and try to fail user task when there is no dependency
+  #  pool:
+  #    name: 'Default'
+  #  steps:
+  #     - download: current
+  #       artifact: Artifact1000
+#----- download optimization end --------------------#
+
+
+- stage: stage2
+  dependsOn: stage1
+  jobs:
+    - job: MyJobFromStage2
+      displayName: download all artifacts from stage1 jobs
+      pool:
+        name: 'Default'
+      steps:
+        - script: echo I am stage2 Job
+
+- stage: stage3
+  jobs:
+    - job: MyJobFromStage3
+      displayName: don't download any artifacts from stage1 jobs as there is no dependency
+      pool:
+        name: 'Default'
+      steps:
+        - script: echo I am stage3 Job
+
+
+
+      #- downloadArtifact:
+      #  name: Artifact2
+      #- task: PublishBuildArtifacts@1
+      #  displayName: Publish NewTestFolder
+      #  inputs:
+      #    pathToPublish: NewTestFolder
+      #    artifactName: NewTestFolder
