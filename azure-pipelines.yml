@@ -6,7 +6,7 @@ stages:
     cancelTimeoutInMinutes: 2
 
     pool:
-      name: 'Default'
+      name: 'Hosted'
 
     steps:
       - task: PublishBuildArtifacts@1
