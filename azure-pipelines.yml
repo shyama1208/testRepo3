@@ -45,7 +45,7 @@ stages:
     - job: MyJobFromStage3
       displayName: don't download any artifacts from stage1 jobs as there is no dependency
       pool:
-        name: 'Default'
+        name: 'Hosted'
       steps:
         - script: echo I am stage3 Job
 
