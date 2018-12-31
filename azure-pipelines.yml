@@ -6,7 +6,7 @@ stages:
     cancelTimeoutInMinutes: 2
 
     pool:
-      name: 'Hosted'
+      name: 'default'
 
     steps:
       - task: PublishBuildArtifacts@1
@@ -26,7 +26,7 @@ stages:
     displayName: Download all artifacts by default
     dependsOn: Job1
     pool:
-      name: 'Hosted'
+      name: 'default'
     steps:
       - script: echo Will download all artifacts uploaded in Job1
 
@@ -36,7 +36,7 @@ stages:
     - job: MyJobFromStage2
       displayName: download all artifacts from stage1 jobs
       pool:
-        name: 'Hosted'
+        name: 'default'
       steps:
         - script: echo I am stage2 Job
 
@@ -45,7 +45,7 @@ stages:
     - job: MyJobFromStage3
       displayName: don't download any artifacts from stage1 jobs as there is no dependency
       pool:
-        name: 'Hosted'
+        name: 'default'
       steps:
         - script: echo I am stage3 Job
 
