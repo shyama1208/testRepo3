@@ -1,8 +1,7 @@
 stages:
 - stage: dev
   jobs:
-  - deployment: MyJob
-    environment: smarthotel-prod
+  - job: MyJob
     displayName: Dev Job
     continueOnError: true
     steps:
